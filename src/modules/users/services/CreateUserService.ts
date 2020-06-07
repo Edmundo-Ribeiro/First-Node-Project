@@ -1,6 +1,7 @@
 import User from '@modules/users/infra/typeorm/entities/User';
 import AppError from '@shared/errors/AppError';
 import { injectable, inject } from 'tsyringe';
+import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
 
 interface IRequesteDTO {
@@ -13,6 +14,8 @@ class CreateUserService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({ name, email, password }: IRequesteDTO): Promise<User> {
@@ -21,10 +24,13 @@ class CreateUserService {
     if (emailAlreadyused) {
       throw new AppError('This email was alredy used');
     }
+
+    const hashpassword = await this.hashProvider.genareteHash(password);
+
     const user = await this.usersRepository.create({
       name,
       email,
-      password,
+      password: hashpassword,
     });
 
     return user;
