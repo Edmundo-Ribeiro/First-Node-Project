@@ -4,7 +4,7 @@ import { injectable, inject } from 'tsyringe';
 import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
 
-interface IRequesteDTO {
+interface IRequestDTO {
   name: string;
   email: string;
   password: string;
@@ -18,7 +18,7 @@ class CreateUserService {
     private hashProvider: IHashProvider,
   ) {}
 
-  public async execute({ name, email, password }: IRequesteDTO): Promise<User> {
+  public async execute({ name, email, password }: IRequestDTO): Promise<User> {
     const emailAlreadyused = await this.usersRepository.findByEmail(email);
 
     if (emailAlreadyused) {
